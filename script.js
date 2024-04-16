@@ -45,18 +45,36 @@ function initCalendar() {
   for (let x = day; x > 0; x--) {
     days += `<div class="day prev-date">${prevDays - x + 1}</div>`;
   }
-  for (let i = 1; i < lastDate; i++) {
+  for (let i = 1; i <= lastDate; i++) {
+    let event = false;
+    eventsArr.forEach((EventObj) => {
+      if (
+        EventObj.day === i &&
+        EventObj.month === month + 1 &&
+        EventObj.year === year
+      ) {
+        event = true;
+      }
+    });
+
     if (
       i === new Date().getDate() &&
       year === new Date().getFullYear() &&
       month === new Date().getMonth()
     ) {
-      days += `<div class="day today">${i}</div>`;
+      if (event) {
+        days += `<div class="day today">${i}</div>`;
+      } else {
+        days += `<div class="day">${i}</div>`;
+      }
     } else {
-      days += `<div class="day ">${i}</div>`;
+      if (event) {
+        days += `<div class="day event">${i}</div>`;
+      } else {
+        days += `<div class="day">${i}</div>`;
+      }
     }
   }
-
   for (let j = 1; j <= nextDays; j++) {
     days += `<div class="day next-date">${j}</div>`;
   }
@@ -91,12 +109,74 @@ todayBtn.addEventListener("click", () => {
   year = today.getFullYear();
   initCalendar();
 });
-dateinput.addEventListener("keyup", (e) => {
+dateinput.addEventListener("input", (e) => {
   dateinput.value = dateinput.value.replace(/[^0-9/]/g, "");
   if (dateinput.value.length === 2) {
     dateinput.value += "/";
   }
   if (dateinput.value.length > 7) {
     dateinput.value = dateinput.value.slice(0, 7);
+  }
+  if (e.inputType === "deleteContentBackward") {
+    if (dateinput.value.length === 3) {
+      dateinput.value = dateinput.value.slice(0, 2);
+    }
+  }
+});
+gotoBtn.addEventListener("click", gotoDate);
+
+function gotoDate() {
+  const dateArr = dateinput.value.split("/");
+  if (dateArr.length === 2) {
+    if (dateArr[0] > 0 && dateArr[0] < 13 && dateArr[1].length === 4) {
+      month = dateArr[0] - 1;
+      year = dateArr[1];
+      initCalendar();
+      return;
+    }
+  }
+  alert("Data inválida!");
+}
+
+const addEventBtn = document.querySelector(".add-event"),
+  addEventContainer = document.querySelector(".add-event-wrapper"),
+  AddEventCloseBtn = document.querySelector(".close"),
+  addEventTitle = document.querySelector(".event-name"),
+  addEventFrom = document.querySelector(".event-time-from"),
+  addEventTo = document.querySelector(".event-time-to");
+
+addEventBtn.addEventListener("click", () => {
+  addEventContainer.classList.toggle("active");
+});
+AddEventCloseBtn.addEventListener("click", () => {
+  addEventContainer.classList.remove("active");
+});
+document.addEventListener("click", (e) => {
+  // se clicar fora da tela
+  if (e.target !== addEventBtn && !addEventContainer.contains(e.target)) {
+    addEventContainer.classList.remove("active");
+  }
+});
+
+addEventTitle.addEventListener("input", (e) => {
+  addEventTitle.value = addEventTitle.value.slice(0, 50);
+});
+
+addEventFrom.addEventListener("input", (e) => {
+  addEventFrom.value = addEventFrom.value.replace(/[^0-9:]/g, "");
+  if (addEventFrom.value.length === 2) {
+    addEventFrom.value += ":";
+  }
+  if (addEventFrom.value.length > 5) {
+    addEventFrom.value = addEventFrom.value.slice(0, 5);
+  }
+});
+addEventTo.addEventListener("input", (e) => {
+  addEventTo.value = addEventTo.value.replace(/[^0-9:]/g, "");
+  if (addEventTo.value.length === 2) {
+    addEventTo.value += ":";
+  }
+  if (addEventTo.value.length > 5) {
+    addEventTo.value = addEventTo.value.slice(0, 5);
   }
 });
