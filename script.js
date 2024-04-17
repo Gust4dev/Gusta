@@ -12,6 +12,24 @@ let activeday;
 let month = today.getMonth();
 let year = today.getFullYear();
 
+const eventsArr = [
+  {
+    day: 13,
+    month: 11,
+    year: 2022,
+    events: [
+      {
+        title: "Event 1 lorem ipsun dolar sit genfa tersd dsad ",
+        time: "10:00 AM",
+      },
+      {
+        title: "Event 2",
+        time: "11:00 AM",
+      },
+    ],
+  },
+];
+
 const months = [
   "Janeiro",
   "Fevereiro",
@@ -49,29 +67,38 @@ function initCalendar() {
     let event = false;
     eventsArr.forEach((EventObj) => {
       if (
-        EventObj.day === i &&
-        EventObj.month === month + 1 &&
-        EventObj.year === year
+        eventObj.year === year &&
+        eventObj.month === month + 1 &&
+        eventObj.day === i
       ) {
         event = true;
       }
     });
-
+    if (
+      eventObj.day === i &&
+      eventObj.month === month + 1 &&
+      eventObj.year === year
+    ) {
+      event = true;
+    }
     if (
       i === new Date().getDate() &&
       year === new Date().getFullYear() &&
       month === new Date().getMonth()
     ) {
+      activeDay = i;
+      getActiveDay(i);
+      updateEvents(i);
       if (event) {
-        days += `<div class="day today">${i}</div>`;
+        days += `<div class="day today active event">${i}</div>`;
       } else {
-        days += `<div class="day">${i}</div>`;
+        days += `<div class="day today active">${i}</div>`;
       }
     } else {
       if (event) {
         days += `<div class="day event">${i}</div>`;
       } else {
-        days += `<div class="day">${i}</div>`;
+        days += `<div class="day ">${i}</div>`;
       }
     }
   }
@@ -79,8 +106,8 @@ function initCalendar() {
     days += `<div class="day next-date">${j}</div>`;
   }
   daysContainer.innerHTML = days;
+  addListner();
 }
-initCalendar();
 
 function prevMonth() {
   month--;
