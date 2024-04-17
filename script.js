@@ -5,7 +5,10 @@ const calendar = document.querySelector(".calendar"),
   next = document.querySelector(".next"),
   todayBtn = document.querySelector(".today-btn"),
   gotoBtn = document.querySelector(".goto-btn"),
-  dateinput = document.querySelector(".date-input");
+  dateinput = document.querySelector(".date-input"),
+  eventDay = document.querySelector(".event-day"),
+  eventDate = document.querySelector(".event-date"),
+  eventsContainer = document.querySelector(".events");
 
 let today = new Date();
 let activeday;
@@ -80,6 +83,10 @@ function initCalendar() {
       year === new Date().getFullYear() &&
       month === new Date().getMonth()
     ) {
+      activeDay = i;
+      getActiveDay(i);
+      updateEvents(i);
+
       if (event) {
         days += `<div class="day today active event">${i}</div>`;
       } else {
@@ -205,6 +212,10 @@ function addListener() {
   days.forEach((day) => {
     day.addEventListener("click", (e) => {
       activeDay = Number(e.target.innerHTML);
+
+      getActiveDay(e.target.innerHTML);
+      updateEvents(e.target.innerHTML);
+
       days.forEach((day) => {
         day.classList.remove("active");
       });
@@ -239,7 +250,49 @@ function addListener() {
             }
           }, 100);
         });
+      } else {
+        e.target.classList.add("active");
       }
     });
   });
+}
+
+function getActiveDay(date) {
+  const day = new Date(year, month, date);
+  const dayName = day.toString().split(" ")[0];
+  eventDay.innerHTML = dayName;
+  eventDate.innerHTML = date + " " + months[month] + " " + year;
+}
+
+function updateEvents(date) {
+  let events = "";
+  let eventsFound = false;
+
+  eventsArr.forEach((event) => {
+    if (
+      date === event.day &&
+      month + 1 === event.month &&
+      year === event.year
+    ) {
+      eventsFound = true;
+      event.events.forEach((event) => {
+        events += `<div class="event">
+        <div class="title">
+          <i class="fas fa-circle"></i>
+          <h3 class="event-title">${event.title}</h3>
+        </div>
+        <div class="event-time">
+          <span class="event-time">${event.time}</span>
+        </div>
+    </div>`;
+      });
+    }
+  });
+
+  if (!eventsFound) {
+    events = `<div class= "no-event">
+  <h3>Sem Eventos!</h3>
+  </div>`;
+  }
+  eventsContainer.innerHTML = events;
 }
